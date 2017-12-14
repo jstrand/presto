@@ -27,6 +27,9 @@ class SaveRequest(BaseHTTPRequestHandler):
             self.end_headers()
             return
 
+        with open(file_path, 'r') as get_file:
+            self.wfile.write(get_file.read())
+
         self.send_response(200)
         self.end_headers()
 
