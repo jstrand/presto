@@ -21,17 +21,18 @@ class SaveRequest(BaseHTTPRequestHandler):
             self.end_headers()
             return
     
-        file_path = os.path.join('data', self.path)
+        file_path = 'data' + self.path
+
         if not os.path.exists(file_path):
             self.send_response(404, "Not found")
             self.end_headers()
             return
 
-        with open(file_path, 'r') as get_file:
-            self.wfile.write(get_file.read())
-
         self.send_response(200)
         self.end_headers()
+
+        with open(file_path, 'rb') as get_file:
+            self.wfile.write(get_file.read())
 
     def do_POST(self):
        
