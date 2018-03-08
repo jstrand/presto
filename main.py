@@ -5,6 +5,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 bind_to = ''
-port = 8000
+port = 8001
 
 presto.PrestoServer(bind_to, port).serve_forever()
