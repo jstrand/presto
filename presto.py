@@ -58,6 +58,9 @@ class SaveRequest(BaseHTTPRequestHandler):
         self.send_response(201)
         self.end_headers()
 
+        # Write curly braces to the body to make it parseable as json
+        self.wfile.write(b'{}')
+
 class PrestoServer:
     def __init__(self, host, port):
         server_address = (host, port)
