@@ -57,6 +57,21 @@ class SaveRequest(BaseHTTPRequestHandler):
 
         self.send_response(201)
         self.end_headers()
+    
+    def do_OPTIONS(self):
+        allowed = ["OPTIONS"]
+        if self.valid_get():
+            allowed += "GET"
+        if self.valid_post():
+            allowed += "POST"
+
+        #self.headers.add_header("Allow", ','.join(allowed))
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "content-type")
+        # self.send_header("Access-Control-Allow", "GET,POST,OPTIONS")
+        self.end_headers()
 
         # Write curly braces to the body to make it parseable as json
         self.wfile.write(b'{}')
