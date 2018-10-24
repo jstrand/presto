@@ -1,10 +1,7 @@
 import presto
 import logging
+import config
 
-# logging.basicConfig(filename="log.yml")
 logging.basicConfig(level=logging.INFO)
 
-bind_to = 'localhost'
-port = 8001
-
-presto.PrestoServer(bind_to, port).serve_forever()
+presto.PrestoServer(config.bind_to, config.port).serve_forever()
