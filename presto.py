@@ -20,6 +20,7 @@ class SaveRequest(BaseHTTPRequestHandler):
         if not self.valid_get():
             self.log_error(self.path + ' not allowed')
             self.send_response(400, 'Invalid path')
+            self.send_cors_headers()
             self.end_headers()
             return
     
@@ -28,6 +29,7 @@ class SaveRequest(BaseHTTPRequestHandler):
         if subject is None:
             self.log_error('Invalid token')
             self.send_response(401, 'Invalid token')
+            self.send_cors_headers()
             self.end_headers()
             return
 
@@ -35,10 +37,12 @@ class SaveRequest(BaseHTTPRequestHandler):
 
         if not os.path.exists(file_path):
             self.send_response(404, "Not found")
+            self.send_cors_headers()
             self.end_headers()
             return
 
         self.send_response(200)
+        self.send_cors_headers()
         self.end_headers()
 
         with open(file_path, 'rb') as get_file:
@@ -49,6 +53,7 @@ class SaveRequest(BaseHTTPRequestHandler):
         if not self.valid_post():
             self.log_error(self.path + ' not allowed')
             self.send_response(400, 'Invalid path')
+            self.send_cors_headers()
             self.end_headers()
             return
         
@@ -57,6 +62,7 @@ class SaveRequest(BaseHTTPRequestHandler):
         if subject is None:
             self.log_error('Invalid token')
             self.send_response(401, 'Invalid token')
+            self.send_cors_headers()
             self.end_headers()
             return
 
@@ -74,8 +80,14 @@ class SaveRequest(BaseHTTPRequestHandler):
         print(self.path)
 
         self.send_response(201)
+        self.send_cors_headers()
         self.end_headers()
     
+    def send_cors_headers(self):
+        self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
     def do_OPTIONS(self):
         allowed = ["OPTIONS"]
         if self.valid_get():
@@ -84,9 +96,7 @@ class SaveRequest(BaseHTTPRequestHandler):
             allowed += "POST"
 
         self.send_response(200)
-        self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "content-type")
+        self.send_cors_headers()
         self.end_headers()
 
         # Write curly braces to the body to make it parseable as json
@@ -117,3 +127,7 @@ class PrestoServer:
     def serve_forever(self):
         self.log.info('Serving Presto on ' + self.httpd.server_name + ':' + str(self.httpd.server_port))
         self.httpd.serve_forever()
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    PrestoServer(config.bind_to, config.port).serve_forever()
